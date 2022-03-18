@@ -65,6 +65,7 @@ class EqualsExpressionNode extends Node<ParsedEqual, {right: TermNode}> {
 
 type ExpressionType =
 	| EqualsExpressionNode
+	| TermType
 
 class ExpressionNode extends Node<ExpressionType, ExpressionType> {
 	parse(value: ExpressionType) {
@@ -74,11 +75,11 @@ class ExpressionNode extends Node<ExpressionType, ExpressionType> {
 
 type ParsedGroup = [
 	Token<TokenType.LeftParen>,
-	ExpressionNode,
+	ExpressionType,
 	Token<TokenType.RightParen>
 ]
 
-class GroupedExpressionNode extends Node<ParsedGroup, ExpressionNode> {
+class GroupedExpressionNode extends Node<ParsedGroup, ExpressionType> {
 	parse([_, child, __]: ParsedGroup) {
 		return child
 	}
@@ -144,7 +145,10 @@ expression.setPattern(
 	lrec_sc(
 		term,
 		equalsExpressionParser,
-		applyNode(ExpressionNode)
+		(...args) => {
+			console.log(args)
+			return args[0]
+		}
 	)
 )
 
