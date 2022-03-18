@@ -1,51 +1,72 @@
 import { apply, buildLexer, list_sc, rep_sc, seq, tok, Token } from "typescript-parsec"
 
 enum TokenType {
-	Quote,
-	StringContents,
-	Whitespace
+
+	StringLiteral,
+	Whitespace,
+	EqualOperator,
+	Identifier,
+	Dot
 }
 
 export const lexer = buildLexer([
-	[true, /^"/g, TokenType.Quote],
-	[true, /^([^"\n])*/g, TokenType.StringContents],
-	[false, /^\s+/g, TokenType.Whitespace]
+	[true, /^[A-Za-z_-]+/g, TokenType.Identifier],
+	[true, /^\./g, TokenType.Dot],
+	[true, /^==/g, TokenType.EqualOperator],
+	[true, /^"([^"\n])*"/g, TokenType.StringLiteral],
+	[false, /^\s+/g, TokenType.Whitespace],
 ])
 
-class Node<T> {
+class Node<V, T> {
 	value: T
 
-	constructor(...args: Token<TokenType>[]) {
-		this.value = this.parse(...args)
+	constructor(value: V) {
+		this.value = this.parse(value)
 	}
 
-	parse(...args: Token<TokenType>[]): T {
+	parse(value: V): T {
 		return null
 	}
 }
 
-class StringNode extends Node<string> {
-	parse(
-		_: Token<TokenType.Quote>,
-		contents: Token<TokenType.StringContents>,
-		__: Token<TokenType.Quote>
-	): string {
-		return contents.text
+class StringNode extends Node<Token<TokenType.StringLiteral>, string> {
+	parse(string: Token<TokenType.StringLiteral>): string {
+		return string.text.slice(1, -1)
 	}
 }
 
+class DottedExpressionNode extends Node<IdentifierNode[], IdentifierNode[]> {
+	parse(parts: IdentifierNode[]) {
+		return parts
+	}
+}
 
-const applyNode = <T>(nodeType: new (...args: Token<TokenType>[]) => Node<T>) =>
-	(value: Token<TokenType>[]) =>
-		new nodeType(...value)
+class IdentifierNode extends Node<Token<TokenType.Identifier>, string> {
+	parse(id: Token<TokenType.Identifier>) {
+		return id.text
+	}
+}
+
+const applyNode = <V, T>(nodeType: new (value: V) => Node<V, T>) =>
+	(value: V) =>
+		new nodeType(value)
 
 const stringParser = apply(
-	seq(
-		tok(TokenType.Quote),
-		tok(TokenType.StringContents),
-		tok(TokenType.Quote)
-	),
+	tok(TokenType.StringLiteral),
 	applyNode(StringNode)
 )
 
-export const parser = stringParser
+const identifierParser = apply(
+	tok(TokenType.Identifier),
+	applyNode(IdentifierNode)
+)
+
+const dottedExpressionParser = apply(
+	list_sc(
+		identifierParser,
+		tok(TokenType.Dot)
+	),
+	applyNode(DottedExpressionNode)
+)
+
+export const parser = dottedExpressionParser

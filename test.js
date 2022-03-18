@@ -5,7 +5,7 @@ console.log(
 	expectSingleResult(
 		expectEOF(
 			parser.parse(
-				lexer.parse('"hello i am a string"')
+				lexer.parse('req.http.FT-Skip-Cache')
 			)
 		)
 	)
