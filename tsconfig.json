@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"module": "CommonJS",
+		"lib": [
+			"ES2017"
+		],
+		"target": "ES2017",
+		"types": [
+			"node"
+		],
+		"noImplicitAny": true,
+		"outDir": "lib"
+	}
+}
