@@ -1,12 +1,13 @@
 const { expectSingleResult, expectEOF } = require('typescript-parsec')
 const {parser, lexer} = require('./')
 
-console.log(
+console.dir(
 	expectSingleResult(
 		expectEOF(
 			parser.parse(
-				lexer.parse('req.http.FT-Skip-Cache')
+				lexer.parse('req.http.FT-Skip-Cache == req.http.fastly-ff')
 			)
 		)
-	)
+	),
+	{depth: null}
 )

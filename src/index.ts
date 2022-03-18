@@ -1,19 +1,24 @@
-import { apply, buildLexer, list_sc, rep_sc, seq, tok, Token } from "typescript-parsec"
+import { alt, apply, buildLexer, list_sc, lrec_sc, rep_sc, rule, seq, tok, Token } from "typescript-parsec"
 
 enum TokenType {
-
 	StringLiteral,
 	Whitespace,
 	EqualOperator,
+	MatchOperator,
 	Identifier,
-	Dot
+	Dot,
+	LeftParen,
+	RightParen
 }
 
 export const lexer = buildLexer([
 	[true, /^[A-Za-z_-]+/g, TokenType.Identifier],
 	[true, /^\./g, TokenType.Dot],
 	[true, /^==/g, TokenType.EqualOperator],
+	[true, /^~/g, TokenType.MatchOperator],
 	[true, /^"([^"\n])*"/g, TokenType.StringLiteral],
+	[true, /^\(/g, TokenType.LeftParen],
+	[true, /^\)/g, TokenType.RightParen],
 	[false, /^\s+/g, TokenType.Whitespace],
 ])
 
@@ -47,6 +52,48 @@ class IdentifierNode extends Node<Token<TokenType.Identifier>, string> {
 	}
 }
 
+type ParsedEqual = [
+	Token<TokenType.EqualOperator>,
+	TermNode
+]
+
+class EqualsExpressionNode extends Node<ParsedEqual, {right: TermNode}> {
+	parse([_, right]: ParsedEqual) {
+		return { right }
+	}
+}
+
+type ExpressionType =
+	| EqualsExpressionNode
+
+class ExpressionNode extends Node<ExpressionType, ExpressionType> {
+	parse(value: ExpressionType) {
+		return value
+	}
+}
+
+type ParsedGroup = [
+	Token<TokenType.LeftParen>,
+	ExpressionNode,
+	Token<TokenType.RightParen>
+]
+
+class GroupedExpressionNode extends Node<ParsedGroup, ExpressionNode> {
+	parse([_, child, __]: ParsedGroup) {
+		return child
+	}
+}
+
+type TermType =
+	| DottedExpressionNode
+	| GroupedExpressionNode
+
+class TermNode extends Node<TermType, TermType> {
+	parse(value: TermType) {
+		return value
+	}
+}
+
 const applyNode = <V, T>(nodeType: new (value: V) => Node<V, T>) =>
 	(value: V) =>
 		new nodeType(value)
@@ -69,4 +116,36 @@ const dottedExpressionParser = apply(
 	applyNode(DottedExpressionNode)
 )
 
-export const parser = dottedExpressionParser
+const term = rule<TokenType, TermType>()
+const expression = rule<TokenType, ExpressionType>()
+
+const groupedExpressionParser = apply(
+	seq(
+		tok(TokenType.LeftParen),
+		expression,
+		tok(TokenType.RightParen)
+	),
+	applyNode(GroupedExpressionNode)
+)
+
+const equalsExpressionParser = seq(
+	tok(TokenType.EqualOperator),
+	term
+)
+
+term.setPattern(
+	alt(
+		dottedExpressionParser,
+		groupedExpressionParser
+	),
+)
+
+expression.setPattern(
+	lrec_sc(
+		term,
+		equalsExpressionParser,
+		applyNode(ExpressionNode)
+	)
+)
+
+export const parser = expression
