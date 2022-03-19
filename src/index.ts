@@ -1,173 +1,18 @@
 import { alt, apply, buildLexer, list_sc, lrec_sc, Parser, rep_sc, rule, seq, tok, Token } from "typescript-parsec"
-
-enum TokenType {
-	StringLiteral,
-	Whitespace,
-	EqualOperator,
-	MatchOperator,
-	Identifier,
-	Dot,
-	LeftParen,
-	RightParen,
-	LeftBrace,
-	RightBrace,
-	Set,
-	If,
-	AssignOperator,
-	Semicolon
-}
-
-export const lexer = buildLexer([
-	[true, /^set/g, TokenType.Set],
-	[true, /^if/g, TokenType.If],
-	[true, /^[A-Za-z_-]+/g, TokenType.Identifier],
-	[true, /^\./g, TokenType.Dot],
-	[true, /^=/g, TokenType.AssignOperator],
-	[true, /^==/g, TokenType.EqualOperator],
-	[true, /^~/g, TokenType.MatchOperator],
-	[true, /^"([^"\n])*"/g, TokenType.StringLiteral],
-	[true, /^\(/g, TokenType.LeftParen],
-	[true, /^\)/g, TokenType.RightParen],
-	[true, /^\{/g, TokenType.LeftBrace],
-	[true, /^\}/g, TokenType.RightBrace],
-	[true, /^;/g, TokenType.Semicolon],
-	[false, /^\s+/g, TokenType.Whitespace],
-])
-
-abstract class Node<V, T> {
-	value: T
-
-	constructor(value: V) {
-		this.value = this.parse(value)
-	}
-
-	abstract parse(value: V): T
-}
-
-class StringNode extends Node<Token<TokenType.StringLiteral>, string> {
-	parse(string: Token<TokenType.StringLiteral>): string {
-		return string.text.slice(1, -1)
-	}
-}
-
-class DottedAccessNode extends Node<IdentifierNode[], IdentifierNode[]> {
-	parse(parts: IdentifierNode[]) {
-		return parts
-	}
-}
-
-class IdentifierNode extends Node<Token<TokenType.Identifier>, string> {
-	parse(id: Token<TokenType.Identifier>) {
-		return id.text
-	}
-}
-
-type ParsedEqual = [
-	Token<TokenType.EqualOperator>,
-	TermNode
-]
-
-class EqualsExpressionNode extends Node<ParsedEqual, {right: TermNode}> {
-	parse([_, right]: ParsedEqual) {
-		return { right }
-	}
-}
-
-type ParsedMatch = [
-	Token<TokenType.MatchOperator>,
-	TermNode
-]
-
-class MatchExpressionNode extends Node<ParsedMatch, {right: TermNode}> {
-	parse([_, right]: ParsedMatch) {
-		return { right }
-	}
-}
-
-type ExpressionTail =
-	| EqualsExpressionNode
-	| MatchExpressionNode
-
-type ExpressionType = {
-	head: TermNode,
-	tail?: ExpressionTail
-}
-
-class ExpressionNode extends Node<ExpressionType, ExpressionType> {
-	parse(value: ExpressionType) {
-		return value
-	}
-}
-
-type ParsedGroup = [
-	Token<TokenType.LeftParen>,
-	ExpressionNode,
-	Token<TokenType.RightParen>
-]
-
-class GroupedExpressionNode extends Node<ParsedGroup, ExpressionNode> {
-	parse([_, child, __]: ParsedGroup) {
-		return child
-	}
-}
-
-type TermType =
-	| DottedAccessNode
-	| GroupedExpressionNode
-
-class TermNode extends Node<TermType, TermType> {
-	parse(value: TermType) {
-		return value
-	}
-}
-
-type ParsedSet = [
-	Token<TokenType.Set>,
-	DottedAccessNode,
-	Token<TokenType.AssignOperator>,
-	ExpressionNode,
-	Token<TokenType.Semicolon>
-]
-
-class SetStatementNode extends Node<ParsedSet, { name: DottedAccessNode, value: ExpressionNode }> {
-	parse([_, name, __, value, ___]: ParsedSet) {
-		return {name, value}
-	}
-}
-
-type StatementType =
-	| IfStatementNode
-	| SetStatementNode
-
-class StatementNode extends Node<StatementType, StatementType> {
-	parse(statement: StatementType) {
-		return statement
-	}
-}
-
-type ParsedBlock = [
-	Token<TokenType.LeftBrace>,
-	StatementNode[],
-	Token<TokenType.RightBrace>,
-]
-
-class BlockNode extends Node<ParsedBlock, StatementNode[]> {
-	parse([_, body, __]: ParsedBlock) {
-		return body
-	}
-}
-
-type ParsedIf = [
-	Token<TokenType.If>,
-	GroupedExpressionNode,
-	BlockNode
-]
-
-class IfStatementNode extends Node<ParsedIf, { condition: ExpressionNode, body: BlockNode }> {
-	parse([_, conditionGroup, body]: ParsedIf) {
-		return {condition: conditionGroup.value, body}
-	}
-}
+import BlockNode from "./ast/block"
+import DottedAccessNode from "./ast/dotted-access"
+import EqualsExpressionNode from "./ast/equals-expression"
+import ExpressionNode from "./ast/expression"
+import GroupedExpressionNode from "./ast/grouped-expression"
+import IdentifierNode from "./ast/identifier"
+import IfStatementNode from "./ast/if-statement"
+import MatchExpressionNode from "./ast/match-expression"
+import Node from "./ast/node"
+import SetStatementNode from "./ast/set-statement"
+import StatementNode from "./ast/statement"
+import StringNode from "./ast/string"
+import TermNode from "./ast/term"
+import { TokenType } from "./lexer"
 
 const nodeApplier = <V, T>(nodeType: new (value: V) => Node<V, T>) => (value: V) => new nodeType(value)
 
@@ -291,3 +136,4 @@ statement.setPattern(
 )
 
 export const parser = statement
+export {default as lexer} from './lexer'
