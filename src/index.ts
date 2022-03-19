@@ -9,13 +9,17 @@ enum TokenType {
 	Dot,
 	LeftParen,
 	RightParen,
+	LeftBrace,
+	RightBrace,
 	Set,
+	If,
 	AssignOperator,
 	Semicolon
 }
 
 export const lexer = buildLexer([
 	[true, /^set/g, TokenType.Set],
+	[true, /^if/g, TokenType.If],
 	[true, /^[A-Za-z_-]+/g, TokenType.Identifier],
 	[true, /^\./g, TokenType.Dot],
 	[true, /^=/g, TokenType.AssignOperator],
@@ -24,6 +28,8 @@ export const lexer = buildLexer([
 	[true, /^"([^"\n])*"/g, TokenType.StringLiteral],
 	[true, /^\(/g, TokenType.LeftParen],
 	[true, /^\)/g, TokenType.RightParen],
+	[true, /^\{/g, TokenType.LeftBrace],
+	[true, /^\}/g, TokenType.RightBrace],
 	[true, /^;/g, TokenType.Semicolon],
 	[false, /^\s+/g, TokenType.Whitespace],
 ])
@@ -129,6 +135,40 @@ class SetStatementNode extends Node<ParsedSet, { name: DottedAccessNode, value: 
 	}
 }
 
+type StatementType =
+	| IfStatementNode
+	| SetStatementNode
+
+class StatementNode extends Node<StatementType, StatementType> {
+	parse(statement: StatementType) {
+		return statement
+	}
+}
+
+type ParsedBlock = [
+	Token<TokenType.LeftBrace>,
+	StatementNode[],
+	Token<TokenType.RightBrace>,
+]
+
+class BlockNode extends Node<ParsedBlock, StatementNode[]> {
+	parse([_, body, __]: ParsedBlock) {
+		return body
+	}
+}
+
+type ParsedIf = [
+	Token<TokenType.If>,
+	GroupedExpressionNode,
+	BlockNode
+]
+
+class IfStatementNode extends Node<ParsedIf, { condition: ExpressionNode, body: BlockNode }> {
+	parse([_, conditionGroup, body]: ParsedIf) {
+		return {condition: conditionGroup.value, body}
+	}
+}
+
 const nodeApplier = <V, T>(nodeType: new (value: V) => Node<V, T>) => (value: V) => new nodeType(value)
 
 const applyNode = <K, V, T>(
@@ -218,4 +258,33 @@ const setStatementParser = applyNode(
 	)
 )
 
-export const parser = setStatementParser
+const statement = rule()
+
+const statementListParser = rep_sc(statement)
+
+const blockParser = applyNode(
+	BlockNode,
+	seq(
+		tok(TokenType.LeftBrace),
+		statementListParser,
+		tok(TokenType.RightBrace),
+	)
+)
+
+const ifStatementParser = applyNode(
+	IfStatementNode,
+	seq(
+		tok(TokenType.If),
+		groupedExpressionParser,
+		blockParser
+	)
+)
+
+statement.setPattern(
+	alt(
+		ifStatementParser,
+		setStatementParser
+	)
+)
+
+export const parser = statement

@@ -5,7 +5,14 @@ console.dir(
 	expectSingleResult(
 		expectEOF(
 			parser.parse(
-				lexer.parse('set var.blah = (req.http.FT-Skip-Cache == req.http.fastly-ff) == "string" ~ "test";')
+				lexer.parse(`
+				if (req.http.FT-Skip-Cache == "Yes") {
+					set var.skipped = "hello";
+					if (req.http.FT-Skip-Cache == "Yes") {
+						set var.skipped = "hello";
+					}
+				}
+				`)
 			)
 		)
 	),
