@@ -5,7 +5,7 @@ console.dir(
 	expectSingleResult(
 		expectEOF(
 			parser.parse(
-				lexer.parse('req.http.FT-Skip-Cache == req.http.fastly-ff')
+				lexer.parse('(req.http.FT-Skip-Cache == req.http.fastly-ff) == "string"')
 			)
 		)
 	),

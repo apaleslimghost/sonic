@@ -40,7 +40,7 @@ class StringNode extends Node<Token<TokenType.StringLiteral>, string> {
 	}
 }
 
-class DottedExpressionNode extends Node<IdentifierNode[], IdentifierNode[]> {
+class DottedAccessNode extends Node<IdentifierNode[], IdentifierNode[]> {
 	parse(parts: IdentifierNode[]) {
 		return parts
 	}
@@ -63,9 +63,25 @@ class EqualsExpressionNode extends Node<ParsedEqual, {right: TermNode}> {
 	}
 }
 
-type ExpressionType =
+type ParsedMatch = [
+	Token<TokenType.MatchOperator>,
+	TermNode
+]
+
+class MatchExpressionNode extends Node<ParsedMatch, {right: TermNode}> {
+	parse([_, right]: ParsedMatch) {
+		return { right }
+	}
+}
+
+type ExpressionTail =
 	| EqualsExpressionNode
-	| TermNode
+	| MatchExpressionNode
+
+type ExpressionType = {
+	head: TermNode,
+	tail?: ExpressionTail
+}
 
 class ExpressionNode extends Node<ExpressionType, ExpressionType> {
 	parse(value: ExpressionType) {
@@ -86,7 +102,7 @@ class GroupedExpressionNode extends Node<ParsedGroup, ExpressionNode> {
 }
 
 type TermType =
-	| DottedExpressionNode
+	| DottedAccessNode
 	| GroupedExpressionNode
 
 class TermNode extends Node<TermType, TermType> {
@@ -95,12 +111,14 @@ class TermNode extends Node<TermType, TermType> {
 	}
 }
 
+const nodeApplier = <V, T>(nodeType: new (value: V) => Node<V, T>) => (value: V) => new nodeType(value)
+
 const applyNode = <K, V, T>(
 	nodeType: new (value: V) => Node<V, T>,
 	parser: Parser<K, V>
 ) => apply(
 	parser,
-	(value: V) => new nodeType(value)
+	nodeApplier(nodeType)
 )
 
 const stringParser = applyNode(
@@ -113,8 +131,8 @@ const identifierParser = applyNode(
 	tok(TokenType.Identifier),
 )
 
-const dottedExpressionParser = applyNode(
-	DottedExpressionNode,
+const dottedAccessParser = applyNode(
+	DottedAccessNode,
 	list_sc(
 		identifierParser,
 		tok(TokenType.Dot)
@@ -141,22 +159,34 @@ const equalsExpressionParser = applyNode(
 	)
 )
 
+const matchExpressionParser = applyNode(
+	MatchExpressionNode,
+	seq(
+		tok(TokenType.MatchOperator),
+		term
+	)
+)
+
 term.setPattern(
 	applyNode(
 		TermNode,
 		alt(
-			dottedExpressionParser,
-			groupedExpressionParser
+			dottedAccessParser,
+			stringParser,
+			groupedExpressionParser,
 		)
 	)
 )
 
-// expression.setPattern(
-// 	lrec_sc(
-// 		apply(term, applyNode(ExpressionNode)),
-// 		equalsExpressionParser,
-
-// 	)
-// )
+expression.setPattern(
+	lrec_sc(
+		applyNode(ExpressionNode, apply(term, head => ({ head }))),
+		alt(
+			equalsExpressionParser,
+			matchExpressionParser
+		),
+		(head, tail) => new ExpressionNode({ head: head.value.head, tail })
+	)
+)
 
 export const parser = expression
