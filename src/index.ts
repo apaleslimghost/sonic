@@ -28,16 +28,14 @@ export const lexer = buildLexer([
 	[false, /^\s+/g, TokenType.Whitespace],
 ])
 
-class Node<V, T> {
+abstract class Node<V, T> {
 	value: T
 
 	constructor(value: V) {
 		this.value = this.parse(value)
 	}
 
-	parse(value: V): T {
-		return null
-	}
+	abstract parse(value: V): T
 }
 
 class StringNode extends Node<Token<TokenType.StringLiteral>, string> {
