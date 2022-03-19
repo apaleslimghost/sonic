@@ -8,17 +8,23 @@ enum TokenType {
 	Identifier,
 	Dot,
 	LeftParen,
-	RightParen
+	RightParen,
+	Set,
+	AssignOperator,
+	Semicolon
 }
 
 export const lexer = buildLexer([
+	[true, /^set/g, TokenType.Set],
 	[true, /^[A-Za-z_-]+/g, TokenType.Identifier],
 	[true, /^\./g, TokenType.Dot],
+	[true, /^=/g, TokenType.AssignOperator],
 	[true, /^==/g, TokenType.EqualOperator],
 	[true, /^~/g, TokenType.MatchOperator],
 	[true, /^"([^"\n])*"/g, TokenType.StringLiteral],
 	[true, /^\(/g, TokenType.LeftParen],
 	[true, /^\)/g, TokenType.RightParen],
+	[true, /^;/g, TokenType.Semicolon],
 	[false, /^\s+/g, TokenType.Whitespace],
 ])
 
@@ -111,6 +117,20 @@ class TermNode extends Node<TermType, TermType> {
 	}
 }
 
+type ParsedSet = [
+	Token<TokenType.Set>,
+	DottedAccessNode,
+	Token<TokenType.AssignOperator>,
+	ExpressionNode,
+	Token<TokenType.Semicolon>
+]
+
+class SetStatementNode extends Node<ParsedSet, { name: DottedAccessNode, value: ExpressionNode }> {
+	parse([_, name, __, value, ___]: ParsedSet) {
+		return {name, value}
+	}
+}
+
 const nodeApplier = <V, T>(nodeType: new (value: V) => Node<V, T>) => (value: V) => new nodeType(value)
 
 const applyNode = <K, V, T>(
@@ -189,4 +209,15 @@ expression.setPattern(
 	)
 )
 
-export const parser = expression
+const setStatementParser = applyNode(
+	SetStatementNode,
+	seq(
+		tok(TokenType.Set),
+		dottedAccessParser,
+		tok(TokenType.AssignOperator),
+		expression,
+		tok(TokenType.Semicolon)
+	)
+)
+
+export const parser = setStatementParser
