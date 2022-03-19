@@ -258,7 +258,7 @@ const setStatementParser = applyNode(
 	)
 )
 
-const statement = rule()
+const statement = rule<TokenType, StatementNode>()
 
 const statementListParser = rep_sc(statement)
 
@@ -281,9 +281,12 @@ const ifStatementParser = applyNode(
 )
 
 statement.setPattern(
-	alt(
-		ifStatementParser,
-		setStatementParser
+	applyNode(
+		StatementNode,
+		alt(
+			ifStatementParser,
+			setStatementParser
+		)
 	)
 )
 
