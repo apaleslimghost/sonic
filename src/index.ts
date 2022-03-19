@@ -1,4 +1,4 @@
-import { alt, apply, buildLexer, list_sc, lrec_sc, rep_sc, rule, seq, tok, Token } from "typescript-parsec"
+import { alt, apply, buildLexer, list_sc, lrec_sc, Parser, rep_sc, rule, seq, tok, Token } from "typescript-parsec"
 
 enum TokenType {
 	StringLiteral,
@@ -95,55 +95,59 @@ class TermNode extends Node<TermType, TermType> {
 	}
 }
 
-const applyNode = <V, T>(nodeType: new (value: V) => Node<V, T>) =>
-	(value: V) =>
-		new nodeType(value)
+const applyNode = <K, V, T>(
+	nodeType: new (value: V) => Node<V, T>,
+	parser: Parser<K, V>
+) => apply(
+	parser,
+	(value: V) => new nodeType(value)
+)
 
-const stringParser = apply(
+const stringParser = applyNode(
+	StringNode,
 	tok(TokenType.StringLiteral),
-	applyNode(StringNode)
 )
 
-const identifierParser = apply(
+const identifierParser = applyNode(
+	IdentifierNode,
 	tok(TokenType.Identifier),
-	applyNode(IdentifierNode)
 )
 
-const dottedExpressionParser = apply(
+const dottedExpressionParser = applyNode(
+	DottedExpressionNode,
 	list_sc(
 		identifierParser,
 		tok(TokenType.Dot)
-	),
-	applyNode(DottedExpressionNode)
+	)
 )
 
 const term = rule<TokenType, TermNode>()
 const expression = rule<TokenType, ExpressionNode>()
 
-const groupedExpressionParser = apply(
+const groupedExpressionParser = applyNode(
+	GroupedExpressionNode,
 	seq(
 		tok(TokenType.LeftParen),
 		expression,
 		tok(TokenType.RightParen)
-	),
-	applyNode(GroupedExpressionNode)
+	)
 )
 
-const equalsExpressionParser = apply(
+const equalsExpressionParser = applyNode(
+	EqualsExpressionNode,
 	seq(
 		tok(TokenType.EqualOperator),
 		term
-	),
-	applyNode(EqualsExpressionNode)
+	)
 )
 
 term.setPattern(
-	apply(
+	applyNode(
+		TermNode,
 		alt(
 			dottedExpressionParser,
 			groupedExpressionParser
-		),
-		applyNode(TermNode)
+		)
 	)
 )
 
