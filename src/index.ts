@@ -65,7 +65,7 @@ class EqualsExpressionNode extends Node<ParsedEqual, {right: TermNode}> {
 
 type ExpressionType =
 	| EqualsExpressionNode
-	| TermType
+	| TermNode
 
 class ExpressionNode extends Node<ExpressionType, ExpressionType> {
 	parse(value: ExpressionType) {
@@ -75,11 +75,11 @@ class ExpressionNode extends Node<ExpressionType, ExpressionType> {
 
 type ParsedGroup = [
 	Token<TokenType.LeftParen>,
-	ExpressionType,
+	ExpressionNode,
 	Token<TokenType.RightParen>
 ]
 
-class GroupedExpressionNode extends Node<ParsedGroup, ExpressionType> {
+class GroupedExpressionNode extends Node<ParsedGroup, ExpressionNode> {
 	parse([_, child, __]: ParsedGroup) {
 		return child
 	}
@@ -117,8 +117,8 @@ const dottedExpressionParser = apply(
 	applyNode(DottedExpressionNode)
 )
 
-const term = rule<TokenType, TermType>()
-const expression = rule<TokenType, ExpressionType>()
+const term = rule<TokenType, TermNode>()
+const expression = rule<TokenType, ExpressionNode>()
 
 const groupedExpressionParser = apply(
 	seq(
@@ -129,27 +129,30 @@ const groupedExpressionParser = apply(
 	applyNode(GroupedExpressionNode)
 )
 
-const equalsExpressionParser = seq(
-	tok(TokenType.EqualOperator),
-	term
+const equalsExpressionParser = apply(
+	seq(
+		tok(TokenType.EqualOperator),
+		term
+	),
+	applyNode(EqualsExpressionNode)
 )
 
 term.setPattern(
-	alt(
-		dottedExpressionParser,
-		groupedExpressionParser
-	),
-)
-
-expression.setPattern(
-	lrec_sc(
-		term,
-		equalsExpressionParser,
-		(...args) => {
-			console.log(args)
-			return args[0]
-		}
+	apply(
+		alt(
+			dottedExpressionParser,
+			groupedExpressionParser
+		),
+		applyNode(TermNode)
 	)
 )
+
+// expression.setPattern(
+// 	lrec_sc(
+// 		apply(term, applyNode(ExpressionNode)),
+// 		equalsExpressionParser,
+
+// 	)
+// )
 
 export const parser = expression
