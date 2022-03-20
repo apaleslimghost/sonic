@@ -34,7 +34,7 @@ const lexer = buildLexer([
 	[true, /^=/g, TokenType.AssignOperator],
 	[true, /^==/g, TokenType.EqualOperator],
 	[true, /^&&/g, TokenType.AndOperator],
-	[true, /^||/g, TokenType.OrOperator],
+	[true, /^\|\|/g, TokenType.OrOperator],
 	[true, /^~/g, TokenType.MatchOperator],
 	[true, /^"([^"\n])*"/g, TokenType.StringLiteral],
 	[true, /^\(/g, TokenType.LeftParen],

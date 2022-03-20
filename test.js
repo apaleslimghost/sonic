@@ -10,6 +10,7 @@ console.dir(
 			parser.parse(
 				lexer.parse(`if (
 					(req.backend == F_test && req.http.FT-Mock-Backend ~ "access")
+					|| "test"
 				) {
 					return (pass);
 				}`)
