@@ -18,13 +18,17 @@ export enum TokenType {
 	AssignOperator,
 	Semicolon,
 	Comment,
-	Sub
+	Sub,
+	Return,
+	ReturnJump,
 }
 
 const lexer = buildLexer([
 	[true, /^set/g, TokenType.Set],
 	[true, /^if/g, TokenType.If],
 	[true, /^sub/g, TokenType.Sub],
+	[true, /^return/g, TokenType.Return],
+	[true, /^(lookup|pass|error|restart|hash|deliver|fetch|deliver_stale)/g, TokenType.ReturnJump],
 	[true, /^[A-Za-z_-]+/g, TokenType.Identifier],
 	[true, /^\./g, TokenType.Dot],
 	[true, /^=/g, TokenType.AssignOperator],

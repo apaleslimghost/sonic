@@ -8,7 +8,11 @@ console.dir(
 	expectSingleResult(
 		expectEOF(
 			parser.parse(
-				lexer.parse(testFile)
+				lexer.parse(`if (
+					(req.backend == F_test && req.http.FT-Mock-Backend ~ "access")
+				) {
+					return (pass);
+				}`)
 			)
 		)
 	),

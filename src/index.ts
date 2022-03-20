@@ -1,4 +1,4 @@
-import { alt, apply, buildLexer, list_sc, lrec_sc, Parser, rep_sc, rule, seq, tok, Token } from "typescript-parsec"
+import { alt, apply, buildLexer, list_sc, lrec_sc, opt_sc, Parser, rep_sc, rule, seq, tok, Token } from "typescript-parsec"
 import AndExpressionNode from "./ast/and-expression"
 import BlockNode from "./ast/block"
 import DottedAccessNode from "./ast/dotted-access"
@@ -10,6 +10,7 @@ import IfStatementNode from "./ast/if-statement"
 import MatchExpressionNode from "./ast/match-expression"
 import Node from "./ast/node"
 import OrExpressionNode from "./ast/or-expression"
+import ReturnStatementNode from "./ast/return-statement"
 import SetStatementNode from "./ast/set-statement"
 import StatementNode from "./ast/statement"
 import StringNode from "./ast/string"
@@ -155,12 +156,28 @@ const subroutineParser = applyNode(
 	)
 )
 
+const returnStatementParser = applyNode(
+	ReturnStatementNode,
+	seq(
+		tok(TokenType.Return),
+		opt_sc(
+			seq(
+				tok(TokenType.LeftParen),
+				tok(TokenType.ReturnJump),
+				tok(TokenType.RightParen),
+			)
+		),
+		tok(TokenType.Semicolon)
+	)
+)
+
 statement.setPattern(
 	applyNode(
 		StatementNode,
 		alt(
 			ifStatementParser,
 			setStatementParser,
+			returnStatementParser,
 			subroutineParser
 		)
 	)
