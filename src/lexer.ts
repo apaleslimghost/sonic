@@ -14,12 +14,15 @@ export enum TokenType {
 	Set,
 	If,
 	AssignOperator,
-	Semicolon
+	Semicolon,
+	Comment,
+	Sub
 }
 
 const lexer = buildLexer([
 	[true, /^set/g, TokenType.Set],
 	[true, /^if/g, TokenType.If],
+	[true, /^sub/g, TokenType.Sub],
 	[true, /^[A-Za-z_-]+/g, TokenType.Identifier],
 	[true, /^\./g, TokenType.Dot],
 	[true, /^=/g, TokenType.AssignOperator],
@@ -31,6 +34,7 @@ const lexer = buildLexer([
 	[true, /^\{/g, TokenType.LeftBrace],
 	[true, /^\}/g, TokenType.RightBrace],
 	[true, /^;/g, TokenType.Semicolon],
+	[false, /^#.+\n/g, TokenType.Comment],
 	[false, /^\s+/g, TokenType.Whitespace],
 ])
 

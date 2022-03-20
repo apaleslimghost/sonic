@@ -11,6 +11,7 @@ import Node from "./ast/node"
 import SetStatementNode from "./ast/set-statement"
 import StatementNode from "./ast/statement"
 import StringNode from "./ast/string"
+import SubroutineNode from "./ast/subroutine"
 import TermNode from "./ast/term"
 import { TokenType } from "./lexer"
 
@@ -125,12 +126,22 @@ const ifStatementParser = applyNode(
 	)
 )
 
+const subroutineParser = applyNode(
+	SubroutineNode,
+	seq(
+		tok(TokenType.Sub),
+		identifierParser,
+		blockParser
+	)
+)
+
 statement.setPattern(
 	applyNode(
 		StatementNode,
 		alt(
 			ifStatementParser,
-			setStatementParser
+			setStatementParser,
+			subroutineParser
 		)
 	)
 )
