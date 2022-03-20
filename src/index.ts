@@ -135,5 +135,5 @@ statement.setPattern(
 	)
 )
 
-export const parser = statement
+export const parser = statementListParser
 export {default as lexer} from './lexer'
