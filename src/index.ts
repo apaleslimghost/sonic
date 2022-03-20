@@ -21,6 +21,7 @@ import StringNode from "./ast/string"
 import SubroutineNode from "./ast/subroutine"
 import TermNode from "./ast/term"
 import { TokenType } from "./lexer"
+import NumberNode from "./ast/number"
 
 const nodeApplier = <V, T>(nodeType: new (value: V) => Node<V, T>) => (value: V) => new nodeType(value)
 
@@ -35,6 +36,11 @@ const applyNode = <K, V, T>(
 const stringParser = applyNode(
 	StringNode,
 	tok(TokenType.StringLiteral),
+)
+
+const numberParser = applyNode(
+	NumberNode,
+	tok(TokenType.NumberLiteral)
 )
 
 const identifierParser = applyNode(
@@ -116,6 +122,7 @@ term.setPattern(
 		alt(
 			dottedAccessParser,
 			stringParser,
+			numberParser,
 			groupedExpressionParser,
 			notExpressionParser
 		)

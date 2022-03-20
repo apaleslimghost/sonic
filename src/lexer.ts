@@ -2,6 +2,7 @@ import { buildLexer } from "typescript-parsec";
 
 export enum TokenType {
 	StringLiteral,
+	NumberLiteral,
 	Whitespace,
 	EqualOperator,
 	NotEqualOperator,
@@ -42,6 +43,7 @@ const lexer = buildLexer([
 	[true, /^&&/g, TokenType.AndOperator],
 	[true, /^\|\|/g, TokenType.OrOperator],
 	[true, /^~/g, TokenType.MatchOperator],
+	[true, /^\d+[a-z]*/g, TokenType.NumberLiteral],
 	[true, /^"([^"\n])*"/g, TokenType.StringLiteral],
 	[true, /^\(/g, TokenType.LeftParen],
 	[true, /^\)/g, TokenType.RightParen],
