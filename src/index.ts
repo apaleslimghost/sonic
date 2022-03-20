@@ -1,4 +1,5 @@
 import { alt, apply, buildLexer, list_sc, lrec_sc, Parser, rep_sc, rule, seq, tok, Token } from "typescript-parsec"
+import AndExpressionNode from "./ast/and-expression"
 import BlockNode from "./ast/block"
 import DottedAccessNode from "./ast/dotted-access"
 import EqualsExpressionNode from "./ast/equals-expression"
@@ -8,6 +9,7 @@ import IdentifierNode from "./ast/identifier"
 import IfStatementNode from "./ast/if-statement"
 import MatchExpressionNode from "./ast/match-expression"
 import Node from "./ast/node"
+import OrExpressionNode from "./ast/or-expression"
 import SetStatementNode from "./ast/set-statement"
 import StatementNode from "./ast/statement"
 import StringNode from "./ast/string"
@@ -63,6 +65,22 @@ const equalsExpressionParser = applyNode(
 	)
 )
 
+const andExpressionParser = applyNode(
+	AndExpressionNode,
+	seq(
+		tok(TokenType.AndOperator),
+		term
+	)
+)
+
+const orExpressionParser = applyNode(
+	OrExpressionNode,
+	seq(
+		tok(TokenType.OrOperator),
+		term
+	)
+)
+
 const matchExpressionParser = applyNode(
 	MatchExpressionNode,
 	seq(
@@ -87,6 +105,8 @@ expression.setPattern(
 		applyNode(ExpressionNode, apply(term, head => ({ head }))),
 		alt(
 			equalsExpressionParser,
+			andExpressionParser,
+			orExpressionParser,
 			matchExpressionParser
 		),
 		(head, tail) => new ExpressionNode({ head: head.value.head, tail })
