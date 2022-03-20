@@ -2,10 +2,12 @@ import { alt, apply, buildLexer, list_sc, lrec_sc, opt_sc, Parser, rep_sc, rule,
 import AndExpressionNode from "./ast/and-expression"
 import BlockNode from "./ast/block"
 import DottedAccessNode from "./ast/dotted-access"
+import ElseNode from "./ast/else"
 import EqualsExpressionNode from "./ast/equals-expression"
 import ExpressionNode from "./ast/expression"
 import GroupedExpressionNode from "./ast/grouped-expression"
 import IdentifierNode from "./ast/identifier"
+import IfNode from "./ast/if"
 import IfStatementNode from "./ast/if-statement"
 import MatchExpressionNode from "./ast/match-expression"
 import Node from "./ast/node"
@@ -138,12 +140,31 @@ const blockParser = applyNode(
 	)
 )
 
-const ifStatementParser = applyNode(
-	IfStatementNode,
+const ifParser = applyNode(
+	IfNode,
 	seq(
 		tok(TokenType.If),
 		groupedExpressionParser,
 		blockParser
+	)
+)
+
+const elseParser = applyNode(
+	ElseNode,
+	seq(
+		tok(TokenType.Else),
+		alt(
+			blockParser,
+			ifParser
+		)
+	)
+)
+
+const ifStatementParser = applyNode(
+	IfStatementNode,
+	seq(
+		ifParser,
+		rep_sc(elseParser)
 	)
 )
 

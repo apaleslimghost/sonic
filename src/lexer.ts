@@ -15,6 +15,7 @@ export enum TokenType {
 	RightBrace,
 	Set,
 	If,
+	Else,
 	AssignOperator,
 	Semicolon,
 	Comment,
@@ -26,6 +27,7 @@ export enum TokenType {
 const lexer = buildLexer([
 	[true, /^set/g, TokenType.Set],
 	[true, /^if/g, TokenType.If],
+	[true, /^else/g, TokenType.Else],
 	[true, /^sub/g, TokenType.Sub],
 	[true, /^return/g, TokenType.Return],
 	[true, /^(lookup|pass|error|restart|hash|deliver|fetch|deliver_stale)/g, TokenType.ReturnJump],
