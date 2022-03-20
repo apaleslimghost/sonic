@@ -11,6 +11,7 @@ import IfNode from "./ast/if"
 import IfStatementNode from "./ast/if-statement"
 import MatchExpressionNode from "./ast/match-expression"
 import Node from "./ast/node"
+import NotEqualsExpressionNode from "./ast/not-equals-expression"
 import OrExpressionNode from "./ast/or-expression"
 import ReturnStatementNode from "./ast/return-statement"
 import SetStatementNode from "./ast/set-statement"
@@ -68,6 +69,14 @@ const equalsExpressionParser = applyNode(
 	)
 )
 
+const notEqualsExpressionParser = applyNode(
+	NotEqualsExpressionNode,
+	seq(
+		tok(TokenType.NotEqualOperator),
+		term
+	)
+)
+
 const andExpressionParser = applyNode(
 	AndExpressionNode,
 	seq(
@@ -108,6 +117,7 @@ expression.setPattern(
 		applyNode(ExpressionNode, apply(term, head => ({ head }))),
 		alt(
 			equalsExpressionParser,
+			notEqualsExpressionParser,
 			andExpressionParser,
 			orExpressionParser,
 			matchExpressionParser
