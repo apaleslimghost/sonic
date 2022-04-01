@@ -1,14 +1,22 @@
 import { File } from "./file.js";
 
 export class Context {
+	files: Map<string, File> = new Map()
+
 	static async load(paths: string[]): Promise<Context> {
-		const files = await Promise.all(paths.map(File.load))
-		return new Context(files)
+		const context = new Context()
+		const files = await Promise.all(
+			paths.map(
+				path => context.load(path)
+			)
+		)
+
+		return context
 	}
 
-	constructor(public files: File[] = []) {}
-
 	async load(path: string): Promise<void> {
-		this.files.push(await File.load(path))
+		if(!this.files.has(path)) {
+			this.files.set(path, await File.load(path, this))
+		}
 	}
 }
