@@ -8,6 +8,12 @@ export class File {
 	source: string
 	ast: StatementNode[]
 
+	static async load(path: string): Promise<File> {
+		const file = new File(path)
+		await file.parse()
+		return file
+	}
+
 	constructor(public path: string) {}
 
 	async load(): Promise<string> {

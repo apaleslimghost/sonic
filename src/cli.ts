@@ -2,6 +2,7 @@ import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { globby } from 'globby'
 import { File } from './file.js'
+import { Context } from './context.js'
 
 interface Arguments {
 	_: string[]
@@ -18,7 +19,7 @@ const argv = yargs(hideBin(process.argv))
 
 async function lint(argv: Arguments) {
 	const paths = await globby(argv._)
-	const files = paths.map(path => new File(path))
+	const context = await Context.load(paths)
 
-	console.log(files)
+	console.log(context)
 }
