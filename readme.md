@@ -24,6 +24,10 @@ a parser and linter for (Fastly) VCL
 		- [ ] checking error number ranges
 		- [ ] redundant if conditions
 		- [ ] unreachable code
-- [ ] tests!
+- [ ] tests
+	- [x] snapshots
+	- [ ] integration tests for linter
+	- [ ] unit tests for AST types
 - [ ] plugin system
 - [ ] a CLI
+	- [ ] a Tool Kit plugin???
