@@ -22,4 +22,9 @@ export default class ExpressionNode extends Node<ExpressionType, ExpressionType>
 	parse(value: ExpressionType) {
 		return value
 	}
+
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
+		yield* this.value.head
+	}
 }

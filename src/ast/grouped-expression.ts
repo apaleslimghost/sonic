@@ -13,4 +13,8 @@ export default class GroupedExpressionNode extends Node<ParsedGroup, ExpressionN
 	parse([_, child, __]: ParsedGroup) {
 		return child
 	}
+
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield* this.value
+	}
 }

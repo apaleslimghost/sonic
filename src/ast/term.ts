@@ -16,4 +16,8 @@ export default class TermNode extends Node<TermType, TermType> {
 	parse(value: TermType) {
 		return value
 	}
+
+	*[Symbol.iterator]():IterableIterator<Node<unknown, unknown>> {
+		yield* this.value
+	}
 }

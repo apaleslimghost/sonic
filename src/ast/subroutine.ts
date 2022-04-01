@@ -14,4 +14,9 @@ export default class SubroutineNode extends Node<ParsedSub, { name: IdentifierNo
 	parse([_, name, body]: ParsedSub) {
 		return { name, body }
 	}
+
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
+		yield* this.value.body
+	}
 }

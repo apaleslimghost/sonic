@@ -22,6 +22,8 @@ async function lint(argv: Arguments) {
 	console.log(context.files.keys())
 
 	for(const file of context.files.values()) {
-		file.ast.traverse(console.log)
+		for(const node of file.ast) {
+			console.log(node)
+		}
 	}
 }

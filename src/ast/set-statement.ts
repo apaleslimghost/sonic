@@ -16,4 +16,9 @@ export default class SetStatementNode extends Node<ParsedSet, { name: DottedAcce
 	parse([_, name, __, value, ___]: ParsedSet) {
 		return {name, value}
 	}
+
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
+		yield* this.value.value
+	}
 }

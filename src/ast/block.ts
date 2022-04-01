@@ -1,6 +1,6 @@
 import { Token } from "typescript-parsec"
 import { TokenType } from "../lexer.js"
-import Node, { TraverseCallback } from "./node.js"
+import Node from "./node.js"
 import StatementNode from "./statement.js"
 
 type ParsedBlock = [
@@ -14,11 +14,11 @@ export default class BlockNode extends Node<ParsedBlock, StatementNode[]> {
 		return body
 	}
 
-	async traverse(callback: TraverseCallback) {
-		super.traverse(callback)
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
 
 		for(const node of this.value) {
-			node.traverse(callback)
+			yield* node
 		}
 	}
 }

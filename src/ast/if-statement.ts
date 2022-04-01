@@ -1,7 +1,7 @@
 import { Token } from "typescript-parsec"
 import ElseNode from "./else.js"
 import IfNode from "./if.js"
-import Node, { TraverseCallback } from "./node.js"
+import Node from "./node.js"
 
 type ParsedIfStatement = [
 	IfNode,
@@ -13,12 +13,12 @@ export default class IfStatementNode extends Node<ParsedIfStatement, { if: IfNod
 		return {if: if_, elses}
 	}
 
-	async traverse(callback: TraverseCallback) {
-		await super.traverse(callback)
-		await this.value.if.traverse(callback)
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
+		yield* this.value.if
 
 		for(const node of this.value.elses) {
-			await node.traverse(callback)
+			yield* node
 		}
 	}
 }

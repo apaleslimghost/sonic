@@ -3,7 +3,7 @@ import { TokenType } from "../lexer.js"
 import BlockNode from "./block.js"
 import ExpressionNode from "./expression.js"
 import GroupedExpressionNode from "./grouped-expression.js"
-import Node, { TraverseCallback } from "./node.js"
+import Node from "./node.js"
 
 type ParsedIf = [
 	Token<TokenType.If>,
@@ -16,9 +16,9 @@ export default class IfNode extends Node<ParsedIf, { condition: ExpressionNode, 
 		return {condition: conditionGroup.value, body}
 	}
 
-	async traverse(callback: TraverseCallback) {
-		await super.traverse(callback)
-		await this.value.condition.traverse(callback)
-		await this.value.body.traverse(callback)
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
+		yield* this.value.condition
+		yield* this.value.body
 	}
 }

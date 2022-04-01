@@ -1,4 +1,4 @@
-import Node, { TraverseCallback } from "./node.js";
+import Node from "./node.js";
 import StatementNode from "./statement.js";
 
 export default class RootNode extends Node<StatementNode[], StatementNode[]> {
@@ -6,11 +6,11 @@ export default class RootNode extends Node<StatementNode[], StatementNode[]> {
 		return statements
 	}
 
-	async traverse(callback: TraverseCallback) {
-		await super.traverse(callback)
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
 
 		for(const node of this.value) {
-			await node.traverse(callback)
+			yield* node
 		}
 	}
 }

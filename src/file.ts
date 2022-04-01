@@ -35,9 +35,8 @@ export class File {
 				)
 			)
 
-			await this.ast.traverse(async node => {
+			for(const node of this.ast) {
 				if(node instanceof IncludeStatementNode) {
-					console.log('HERE', node)
 					const resolvedPath = path.resolve(
 						path.dirname(this.path),
 						node.value.path
@@ -45,7 +44,7 @@ export class File {
 
 					await this.context.load(resolvedPath)
 				}
-			})
+			}
 
 		}
 
