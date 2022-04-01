@@ -12,4 +12,9 @@ export default class MatchExpressionNode extends Node<ParsedMatch, {right: TermN
 	parse([_, right]: ParsedMatch) {
 		return { right }
 	}
+
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
+		yield* this.value.right
+	}
 }

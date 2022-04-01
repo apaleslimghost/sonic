@@ -12,4 +12,9 @@ export default class NotExpressionNode extends Node<ParsedNot, ExpressionNode> {
 	parse([_, child]: ParsedNot) {
 		return child
 	}
+
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
+		yield* this.value
+	}
 }

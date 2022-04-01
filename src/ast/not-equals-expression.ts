@@ -12,4 +12,9 @@ export default class NotEqualsExpressionNode extends Node<ParsedNotEqual, {right
 	parse([_, right]: ParsedNotEqual) {
 		return { right }
 	}
+
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
+		yield* this.value.right
+	}
 }

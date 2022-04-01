@@ -15,4 +15,9 @@ export default class ElseNode extends Node<ParsedElse, { body: BlockNode | IfNod
 	parse([_, body]: ParsedElse) {
 		return { body }
 	}
+
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
+		yield* this.value.body
+	}
 }

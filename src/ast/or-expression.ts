@@ -12,4 +12,9 @@ export default class OrExpressionNode extends Node<ParsedOr, { right: TermNode }
 	parse([_, right]: ParsedOr) {
 		return { right }
 	}
+
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
+		yield* this.value.right
+	}
 }

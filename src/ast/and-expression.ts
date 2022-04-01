@@ -12,4 +12,9 @@ export default class AndExpressionNode extends Node<ParsedAnd, { right: TermNode
 	parse([_, right]: ParsedAnd) {
 		return { right }
 	}
+
+	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
+		yield this
+		yield* this.value.right
+	}
 }

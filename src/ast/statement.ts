@@ -16,7 +16,6 @@ export default class StatementNode extends Node<StatementType, StatementType> {
 	}
 
 	*[Symbol.iterator](): IterableIterator<Node<unknown, unknown>> {
-		yield this
 		yield* this.value
 	}
 }
