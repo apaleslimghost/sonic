@@ -1,8 +1,8 @@
 import { Token } from "typescript-parsec"
-import { TokenType } from "../lexer"
-import DottedAccessNode from "./dotted-access"
-import ExpressionNode from "./expression"
-import Node from "./node"
+import { TokenType } from "../lexer.js"
+import DottedAccessNode from "./dotted-access.js"
+import ExpressionNode from "./expression.js"
+import Node from "./node.js"
 
 type ParsedSet = [
 	Token<TokenType.Set>,

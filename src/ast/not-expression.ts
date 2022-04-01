@@ -1,7 +1,7 @@
 import { Token } from "typescript-parsec"
-import { TokenType } from "../lexer"
-import ExpressionNode from "./expression"
-import Node from "./node"
+import { TokenType } from "../lexer.js"
+import ExpressionNode from "./expression.js"
+import Node from "./node.js"
 
 type ParsedNot = [
 	Token<TokenType.NotOperator>,

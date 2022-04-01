@@ -1,7 +1,7 @@
 import { Token } from "typescript-parsec"
-import { TokenType } from "../lexer"
-import Node from "./node"
-import StatementNode from "./statement"
+import { TokenType } from "../lexer.js"
+import Node from "./node.js"
+import StatementNode from "./statement.js"
 
 type ParsedBlock = [
 	Token<TokenType.LeftBrace>,

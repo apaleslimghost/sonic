@@ -1,8 +1,8 @@
-import IfStatementNode from "./if-statement"
-import Node from "./node"
-import ReturnStatementNode from "./return-statement"
-import SetStatementNode from "./set-statement"
-import SubroutineNode from "./subroutine"
+import IfStatementNode from "./if-statement.js"
+import Node from "./node.js"
+import ReturnStatementNode from "./return-statement.js"
+import SetStatementNode from "./set-statement.js"
+import SubroutineNode from "./subroutine.js"
 
 type StatementType =
 	| IfStatementNode

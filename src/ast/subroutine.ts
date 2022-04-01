@@ -1,8 +1,8 @@
 import { Token } from "typescript-parsec";
-import { TokenType } from "../lexer";
-import BlockNode from "./block";
-import IdentifierNode from "./identifier";
-import Node from "./node";
+import { TokenType } from "../lexer.js";
+import BlockNode from "./block.js";
+import IdentifierNode from "./identifier.js";
+import Node from "./node.js";
 
 type ParsedSub = [
 	Token<TokenType.Sub>,

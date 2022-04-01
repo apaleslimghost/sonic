@@ -1,10 +1,10 @@
-import AndExpressionNode from "./and-expression"
-import EqualsExpressionNode from "./equals-expression"
-import MatchExpressionNode from "./match-expression"
-import Node from "./node"
-import NotEqualsExpressionNode from "./not-equals-expression"
-import OrExpressionNode from "./or-expression"
-import TermNode from "./term"
+import AndExpressionNode from "./and-expression.js"
+import EqualsExpressionNode from "./equals-expression.js"
+import MatchExpressionNode from "./match-expression.js"
+import Node from "./node.js"
+import NotEqualsExpressionNode from "./not-equals-expression.js"
+import OrExpressionNode from "./or-expression.js"
+import TermNode from "./term.js"
 
 type ExpressionTail =
 	| EqualsExpressionNode

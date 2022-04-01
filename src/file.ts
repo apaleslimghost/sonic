@@ -1,8 +1,8 @@
 import { promises as fs } from 'fs'
 import { expectEOF, expectSingleResult } from 'typescript-parsec'
-import { parser } from '.'
+import parser from './parser.js'
 import StatementNode from './ast/statement'
-import lexer from './lexer'
+import lexer from './lexer.js'
 
 export class File {
 	source: string

@@ -1,6 +1,6 @@
 import { Token } from "typescript-parsec";
-import { TokenType } from "../lexer";
-import Node from "./node";
+import { TokenType } from "../lexer.js";
+import Node from "./node.js";
 
 type ParsedReturn = [
 	Token<TokenType.Return>,

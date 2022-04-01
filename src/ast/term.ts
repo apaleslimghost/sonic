@@ -1,9 +1,9 @@
-import DottedAccessNode from "./dotted-access"
-import GroupedExpressionNode from "./grouped-expression"
-import Node from "./node"
-import NotExpressionNode from "./not-expression"
-import NumberNode from "./number"
-import StringNode from "./string"
+import DottedAccessNode from "./dotted-access.js"
+import GroupedExpressionNode from "./grouped-expression.js"
+import Node from "./node.js"
+import NotExpressionNode from "./not-expression.js"
+import NumberNode from "./number.js"
+import StringNode from "./string.js"
 
 type TermType =
 | DottedAccessNode

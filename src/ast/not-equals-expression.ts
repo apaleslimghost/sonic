@@ -1,7 +1,7 @@
 import { Token } from "typescript-parsec"
-import { TokenType } from "../lexer"
-import Node from "./node"
-import TermNode from "./term"
+import { TokenType } from "../lexer.js"
+import Node from "./node.js"
+import TermNode from "./term.js"
 
 type ParsedNotEqual = [
 	Token<TokenType.NotEqualOperator>,

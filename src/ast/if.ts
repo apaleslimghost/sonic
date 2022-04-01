@@ -1,9 +1,9 @@
 import { Token } from "typescript-parsec"
-import { TokenType } from "../lexer"
-import BlockNode from "./block"
-import ExpressionNode from "./expression"
-import GroupedExpressionNode from "./grouped-expression"
-import Node from "./node"
+import { TokenType } from "../lexer.js"
+import BlockNode from "./block.js"
+import ExpressionNode from "./expression.js"
+import GroupedExpressionNode from "./grouped-expression.js"
+import Node from "./node.js"
 
 type ParsedIf = [
 	Token<TokenType.If>,

@@ -1,7 +1,7 @@
 import { Token } from "typescript-parsec"
-import ElseNode from "./else"
-import IfNode from "./if"
-import Node from "./node"
+import ElseNode from "./else.js"
+import IfNode from "./if.js"
+import Node from "./node.js"
 
 type ParsedIfStatement = [
 	IfNode,

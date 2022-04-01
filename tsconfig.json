@@ -3,12 +3,14 @@
 		"src/**/*"
 	],
 	"compilerOptions": {
-		"module": "CommonJS",
+		"module": "ES2020",
 		"lib": [
 			"ES2017"
 		],
 		"target": "ES2017",
 		"noImplicitAny": true,
-		"outDir": "lib"
+		"outDir": "lib",
+		"esModuleInterop": true,
+		"moduleResolution": "node"
 	}
 }

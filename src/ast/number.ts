@@ -1,6 +1,6 @@
 import { Token } from 'typescript-parsec'
-import { TokenType } from '../lexer'
-import Node from './node'
+import { TokenType } from '../lexer.js'
+import Node from './node.js'
 
 export default class NumberNode extends Node<Token<TokenType.NumberLiteral>, { value: number, suffix: string }> {
 	parse(number: Token<TokenType.NumberLiteral>) {
