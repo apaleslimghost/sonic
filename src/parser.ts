@@ -22,6 +22,7 @@ import SubroutineNode from "./ast/subroutine.js"
 import TermNode from "./ast/term.js"
 import { TokenType } from "./lexer.js"
 import NumberNode from "./ast/number.js"
+import IncludeStatementNode from "./ast/include-statement.js"
 
 const nodeApplier = <V, T>(nodeType: new (value: V) => Node<V, T>) => (value: V) => new nodeType(value)
 
@@ -219,6 +220,15 @@ const returnStatementParser = applyNode(
 	)
 )
 
+const includeStatementParser = applyNode(
+	IncludeStatementNode,
+	seq(
+		tok(TokenType.Include),
+		stringParser,
+		tok(TokenType.Semicolon)
+	)
+)
+
 statement.setPattern(
 	applyNode(
 		StatementNode,
@@ -226,7 +236,8 @@ statement.setPattern(
 			ifStatementParser,
 			setStatementParser,
 			returnStatementParser,
-			subroutineParser
+			subroutineParser,
+			includeStatementParser
 		)
 	)
 )

@@ -23,6 +23,7 @@ export enum TokenType {
 	Semicolon,
 	Comment,
 	Sub,
+	Include,
 	Return,
 	ReturnJump,
 }
@@ -33,6 +34,7 @@ const lexer = buildLexer([
 	[true, /^else/g, TokenType.Else],
 	[true, /^sub/g, TokenType.Sub],
 	[true, /^return/g, TokenType.Return],
+	[true, /^include/g, TokenType.Include],
 	[true, /^(lookup|pass|error|restart|hash|deliver|fetch|deliver_stale)/g, TokenType.ReturnJump],
 	[true, /^[A-Za-z_-]+/g, TokenType.Identifier],
 	[true, /^\./g, TokenType.Dot],
