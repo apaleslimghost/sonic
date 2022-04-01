@@ -16,10 +16,12 @@ const argv = yargs(hideBin(process.argv))
 	.command('$0', 'lint files', () => {}, lint)
 	.parse()
 
-
 async function lint(argv: Arguments) {
 	const paths = await globby(argv._)
 	const context = await Context.load(paths)
+	console.log(context.files.keys())
 
-	console.log(context)
+	for(const file of context.files.values()) {
+		file.ast.traverse(console.log)
+	}
 }

@@ -23,6 +23,7 @@ import TermNode from "./ast/term.js"
 import { TokenType } from "./lexer.js"
 import NumberNode from "./ast/number.js"
 import IncludeStatementNode from "./ast/include-statement.js"
+import RootNode from "./ast/root.js"
 
 const nodeApplier = <V, T>(nodeType: new (value: V) => Node<V, T>) => (value: V) => new nodeType(value)
 
@@ -242,4 +243,9 @@ statement.setPattern(
 	)
 )
 
-export default statementListParser
+const root = applyNode(
+	RootNode,
+	statementListParser
+)
+
+export default root
